@@ -1,0 +1,6 @@
+pyspark>=3.4.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+pandas>=2.0.0
+pytest>=7.4.0
+pytest-spark>=0.6.0
