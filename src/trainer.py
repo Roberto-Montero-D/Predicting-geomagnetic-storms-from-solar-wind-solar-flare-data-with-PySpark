@@ -2,6 +2,7 @@ import itertools
 from pyspark.ml.classification import RandomForestClassifier, GBTClassifier
 from pyspark.ml.feature import VectorAssembler
 from pyspark.sql import DataFrame
+from pyspark.ml import Model
 
 from evaluator import Evaluator
 
@@ -38,14 +39,14 @@ class Trainer:
     Instead we evaluate each parameter combination on the chronological
     validation set and keep the model with the best F1 score.
 
-    Class imbalance (~2.3% positive): accuracy is not a reliable metric here.
+    Class imbalance (~1.26% positive): accuracy is not a reliable metric here.
     F1 is used as the selection criterion to balance precision and recall.
     """
 
     def __init__(self):
         self.evaluator = Evaluator()
 
-    def vectorize(self, df: DataFrame, feature_cols: list = None) -> DataFrame:
+    def vectorize(self, df: DataFrame, feature_cols: list | None = None) -> DataFrame:
         cols = feature_cols or FEATURE_COLS
         assembler = VectorAssembler(inputCols=cols, outputCol="features")
         return assembler.transform(df).select("features", "target", "timestamp")
@@ -72,7 +73,7 @@ class Trainer:
             preds  = model.transform(val_df)
             metrics = self.evaluator.compute_metrics(preds)
             f1 = metrics["f1"]
-            print(f"  {params} → F1={f1:.4f}  P={metrics['precision']:.4f}  R={metrics['recall']:.4f}")
+            print(f"  {params} -> F1={f1:.4f}  P={metrics['precision']:.4f}  R={metrics['recall']:.4f}")
 
             if f1 > best_f1:
                 best_f1     = f1
@@ -80,15 +81,16 @@ class Trainer:
                 best_params = params
 
         print(f"\n  Best F1: {best_f1:.4f} | Best params: {best_params}")
+        assert best_model is not None, "param_grid cannot be empty"
         return best_model, best_f1, best_params
 
     def train_random_forest(self, train_df: DataFrame, val_df: DataFrame):
-        print("\n[Trainer] Random Forest – hyperparameter search")
+        print("\n[Trainer] Random Forest - hyperparameter search")
         param_grid = {
-            "maxDepth":             [5, 10, 15],
-            "numTrees":             [50, 100, 200],
-            "minInstancesPerNode":  [1, 5],
-            "featureSubsetStrategy":["sqrt", "log2", "onethird"],
+            "maxDepth":              [5, 8],
+            "numTrees":              [50],
+            "minInstancesPerNode":   [1],
+            "featureSubsetStrategy": ["sqrt", "log2"],
         }
         base_params = {
             "labelCol":    "target",
@@ -98,12 +100,12 @@ class Trainer:
         return self._tune(RandomForestClassifier, param_grid, base_params, train_df, val_df)
 
     def train_gbt(self, train_df: DataFrame, val_df: DataFrame):
-        print("\n[Trainer] GBTClassifier – hyperparameter search")
+        print("\n[Trainer] GBTClassifier - hyperparameter search")
         param_grid = {
-            "maxDepth":        [3, 4, 5],
-            "maxIter":         [50, 100, 150],
-            "stepSize":        [0.05, 0.1],
-            "subsamplingRate": [0.7, 0.9],
+            "maxDepth":        [3, 5],
+            "maxIter":         [50],
+            "stepSize":        [0.1],
+            "subsamplingRate": [0.8],
         }
         base_params = {
             "labelCol":    "target",

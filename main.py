@@ -21,6 +21,7 @@ Arguments
 
 import sys
 import os
+os.environ["PYTHONIOENCODING"] = "utf-8"
 
 # Make src/ importable when running from project root
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
@@ -83,7 +84,11 @@ def build_spark() -> SparkSession:
     return (
         SparkSession.builder
         .appName("Geomagstorm")
-        .config("spark.driver.memory", "8g")
+        .config("spark.driver.memory", "10g")
+        .config("spark.executor.memory", "4g")
+        .config("spark.driver.maxResultSize", "4g")
+        .config("spark.sql.shuffle.partitions", "8")
+        .config("spark.memory.fraction", "0.8")
         .getOrCreate()
     )
 
@@ -154,7 +159,7 @@ def run_etl(spark: SparkSession, storage: ParquetStorage):
 
 def run_eda(df):
     print("\n" + "="*60)
-    print("  STAGE 2 – EDA")
+    print("  STAGE 2 - EDA")
     print("="*60)
     eda = EDA(output_dir=os.path.join(OUTPUTS_PATH, "eda"))
     eda.run(df)

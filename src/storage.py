@@ -28,13 +28,14 @@ class ParquetStorage:
     def write(self, df: DataFrame, table: str, mode: str = "overwrite") -> None:
         path = self._path(table)
         df.write.mode(mode).parquet(path)
-        print(f"[Storage] Wrote '{table}' → {path}")
+        print(f"[Storage] Wrote '{table}' -> {path}")
 
     def read(self, spark: SparkSession, table: str) -> DataFrame:
         path = self._path(table)
         df = spark.read.parquet(path)
-        print(f"[Storage] Read '{table}' ← {path}  ({df.count()} rows)")
+        print(f"[Storage] Read '{table}' <- {path}  ({df.count()} rows)")
         return df
 
     def exists(self, table: str) -> bool:
         return os.path.isdir(self._path(table))
+ 

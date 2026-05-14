@@ -100,10 +100,17 @@ Two ensemble classifiers are trained and compared:
 
 | Model | Best Val F1 | Test F1 | Precision | Recall |
 |---|---|---|---|---|
-| **Random Forest** | 0.8602 | 0.8583 | 0.9170 | 0.8066 |
-| **GBTClassifier** | 0.8817 | 0.8435 | 0.8883 | 0.8029 |
+| Random Forest | 0.8298 | 0.8465 | 0.8922 | 0.8054 |
+| **GBTClassifier** | **0.8696** | **0.8671** | **0.9081** | **0.8297** |
 
-**Winner: Random Forest** — slightly lower validation F1 but significantly less overfitting (val/test gap: 0.002 vs 0.038 for GBT), making it more reliable on unseen data.
+**Winner: GBTClassifier** — best on all metrics across both validation and test sets. The val/test gap is minimal (-0.003), confirming the model generalises well without overfitting despite the highly imbalanced dataset (1.26% positive class).
+
+Confusion matrix on the test set (35,064 observations):
+
+| | Predicted: No Storm | Predicted: Storm |
+|---|---|---|
+| **Actual: No Storm** | 34,173 (TN) | 69 (FP) |
+| **Actual: Storm** | 140 (FN) | 682 (TP) |
 
 #### Why not `CrossValidator`?
 
@@ -111,7 +118,7 @@ Spark's built-in `CrossValidator` shuffles data randomly before folding, which *
 
 #### Class imbalance
 
-Only ~2.3% of hourly observations correspond to geomagnetic storms. Accuracy is therefore a misleading metric (a model predicting "no storm" always would score 97.7%). **F1 score** is used as the optimization criterion throughout, balancing precision and recall for the minority class.
+Only **1.26%** of hourly observations correspond to geomagnetic storms (1,995 positive out of 157,776 total). Accuracy is therefore a misleading metric — a model that always predicts "no storm" would score 98.7%. **F1 score** is used as the optimization criterion throughout, balancing precision and recall for the minority class.
 
 ---
 
@@ -121,7 +128,7 @@ Only ~2.3% of hourly observations correspond to geomagnetic storms. Accuracy is 
 
 - Python 3.10+
 - Java 11+ (required by Spark)
-- ~8 GB RAM recommended
+- 16 GB RAM minimum recommended (Spark driver uses ~10 GB during training)
 
 ### Install
 
@@ -129,6 +136,18 @@ Only ~2.3% of hourly observations correspond to geomagnetic storms. Accuracy is 
 git clone https://github.com/your-username/geomagstorm.git
 cd geomagstorm
 pip install -r requirements.txt
+```
+
+### Windows users
+
+Spark requires Hadoop's native binaries on Windows. Before running:
+
+1. Download `winutils.exe` and `hadoop.dll` from [cdarlint/winutils](https://github.com/cdarlint/winutils/tree/master/hadoop-3.3.5/bin) and place them in `C:\hadoop\bin\`.
+2. Set the environment variable `HADOOP_HOME=C:\hadoop` and add `C:\hadoop\bin` to `PATH`.
+3. Set console encoding before running:
+```powershell
+$env:PYTHONIOENCODING = "utf-8"
+spark-submit main.py
 ```
 
 ### Run the full pipeline
