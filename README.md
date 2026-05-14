@@ -1,4 +1,4 @@
-# 🌌 Geomagstorm — Geomagnetic Storm Prediction with PySpark
+# Geomagstorm — Geomagnetic Storm Prediction with PySpark
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
 [![PySpark](https://img.shields.io/badge/Apache%20Spark-3.4%2B-orange?logo=apachespark)](https://spark.apache.org/)
@@ -9,7 +9,7 @@ End-to-end machine learning pipeline built with **Apache Spark** to predict geom
 
 ---
 
-## 🔭 Problem & Physics Context
+## Problem & Physics Context
 
 A **geomagnetic storm** occurs when energy from the solar wind couples strongly with Earth's magnetosphere, disrupting satellite operations, GPS accuracy, power grids, and radio communications. The severity of a storm is measured by the **Kp index** (0–9 scale); values ≥ 5 indicate a significant storm.
 
@@ -28,7 +28,7 @@ Predicting these events in advance requires monitoring the **interplanetary sola
 
 ---
 
-## 📊 Data Sources
+## Data Sources
 
 | Dataset | Source | Description |
 |---|---|---|
@@ -37,7 +37,7 @@ Predicting these events in advance requires monitoring the **interplanetary sola
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 geomagstorm/
@@ -69,7 +69,7 @@ geomagstorm/
 
 ---
 
-## ⚙️ Pipeline Stages
+## Pipeline Stages
 
 ### Stage 1 — ETL
 
@@ -122,7 +122,7 @@ Only **1.26%** of hourly observations correspond to geomagnetic storms (1,995 po
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Requirements
 
@@ -179,7 +179,7 @@ Expected output: **14 tests passing**.
 
 ---
 
-## 🔬 Key Engineering Decisions
+## Key Engineering Decisions
 
 **Parquet over a relational database** — the original version of this project used a PostgreSQL container to store intermediate datasets. This was replaced with Parquet files for several reasons: no external service dependency, native Spark support, columnar compression, and schema preservation. This is the approach used in real data lake architectures (AWS S3, Databricks, Azure Data Lake).
 
@@ -189,7 +189,7 @@ Expected output: **14 tests passing**.
 
 ---
 
-## 👤 Author
+## Author
 
 **Roberto Montero De la Paz**
 Physics graduate · Data Science Program (FundaTEC / TEC Costa Rica)

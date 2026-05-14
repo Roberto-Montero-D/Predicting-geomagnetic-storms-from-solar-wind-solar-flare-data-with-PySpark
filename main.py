@@ -1,5 +1,5 @@
 """
-Geomagstorm – Geomagnetic Storm Prediction Pipeline
+Geomagstorm  Geomagnetic Storm Prediction Pipeline
 ====================================================
 End-to-end Spark pipeline that:
   1. Loads raw OMNI solar-wind and GBM solar-flare data
@@ -7,7 +7,7 @@ End-to-end Spark pipeline that:
   3. Joins the two sources on hourly timestamps
   4. Runs exploratory data analysis (plots saved to outputs/eda/)
   5. Trains and evaluates Random Forest and GBT classifiers
-  6. Persists every stage as Parquet (no database dependency)
+  6. Persists every stSage as Parquet (no database dependency)
 
 Usage
 -----
@@ -97,7 +97,7 @@ def build_spark() -> SparkSession:
 
 def run_etl(spark: SparkSession, storage: ParquetStorage):
     print("\n" + "="*60)
-    print("  STAGE 1 – ETL")
+    print("  STAGE 1 - ETL")
     print("="*60)
 
     reader    = Reader(spark, RAW_DATA_PATH)
@@ -169,7 +169,7 @@ def run_eda(df):
 
 def run_training(df):
     print("\n" + "="*60)
-    print("  STAGE 3 – TRAINING")
+    print("  STAGE 3 - TRAINING")
     print("="*60)
 
     trainer   = Trainer()
@@ -192,13 +192,13 @@ def run_training(df):
     rf_model, rf_val_f1, rf_params = trainer.train_random_forest(train, val)
     rf_preds   = rf_model.transform(test)
     rf_metrics = evaluator.compute_metrics(rf_preds)
-    evaluator.print_report(f"Random Forest (test) – best params: {rf_params}", rf_metrics)
+    evaluator.print_report(f"Random Forest (test) - best params: {rf_params}", rf_metrics)
 
     # ── GBT ──────────────────────────────────────────────────────
     gbt_model, gbt_val_f1, gbt_params = trainer.train_gbt(train, val)
     gbt_preds   = gbt_model.transform(test)
     gbt_metrics = evaluator.compute_metrics(gbt_preds)
-    evaluator.print_report(f"GBTClassifier (test) – best params: {gbt_params}", gbt_metrics)
+    evaluator.print_report(f"GBTClassifier (test) - best params: {gbt_params}", gbt_metrics)
 
     # ── Feature importance plots ──────────────────────────────────
     eda = EDA(output_dir=os.path.join(OUTPUTS_PATH, "eda"))
